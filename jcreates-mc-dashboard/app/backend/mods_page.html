@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Server Mods</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #14171c; color: #e8eaed; margin: 0; padding: 24px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .sub { color: #9aa0a6; margin-bottom: 20px; }
+  .card { background: #1f242b; border: 1px solid #333a44; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+  .card .info { flex: 1; min-width: 0; }
+  .card .name { font-weight: 600; }
+  .card .meta { color: #9aa0a6; font-size: .85rem; }
+  .btn { display: inline-block; background: #2f7d32; color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; font-size: 1rem; cursor: pointer; text-decoration: none; }
+  .btn:hover { background: #388e3c; }
+  .btn.ghost { background: #333a44; }
+  .missing { opacity: .75; }
+  .missing .name { color: #f0b429; }
+  .steps { background: #1f242b; border: 1px solid #333a44; border-radius: 10px; padding: 14px 18px; margin-top: 20px; }
+  .steps ol { margin: 8px 0; padding-left: 20px; }
+  .steps li { margin-bottom: 6px; }
+  .hidden { display: none; }
+  #status { color: #9aa0a6; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Server Mods</h1>
+  <div class="sub">Download the mods you need to join the server.</div>
+  <div id="status">Loading…</div>
+  <div id="list"></div>
+  <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button class="btn hidden" id="dlAll">Download all (.zip)</button>
+  </div>
+  <div class="steps">
+    <strong>How to install (Prism Launcher)</strong>
+    <ol>
+      <li>Download the mod file(s) above.</li>
+      <li>In Prism Launcher, right-click your instance → <em>Edit</em> → <em>Mods</em>.</li>
+      <li>Drag the downloaded <code>.jar</code> file(s) into the Mods window.</li>
+      <li>Launch the game and rejoin the server.</li>
+    </ol>
+  </div>
+</div>
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const ids = params.getAll('id').map(s => s.trim()).filter(Boolean);
+  const list = document.getElementById('list');
+  const status = document.getElementById('status');
+  const dlAll = document.getElementById('dlAll');
+
+  function card(mod, ok) {
+    const div = document.createElement('div');
+    div.className = 'card' + (ok ? '' : ' missing');
+    const info = document.createElement('div');
+    info.className = 'info';
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = ok ? (mod.name + (mod.version ? ' ' + mod.version : '')) : mod;
+    info.appendChild(name);
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = ok ? (mod.id + ' · ' + fmtSize(mod.size)) : 'Not hosted on this server — ask the server owner.';
+    info.appendChild(meta);
+    div.appendChild(info);
+    if (ok) {
+      const a = document.createElement('a');
+      a.className = 'btn';
+      a.href = 'download/' + encodeURIComponent(mod.id);
+      a.textContent = 'Download';
+      div.appendChild(a);
+    }
+    return div;
+  }
+
+  function fmtSize(b) {
+    if (b == null) return '';
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(0) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+
+  async function main() {
+    try {
+      let res;
+      if (ids.length) {
+        res = await fetch('api/mods/check?ids=' + encodeURIComponent(ids.join(',')));
+        if (!res.ok) throw new Error('check failed');
+        const data = await res.json();
+        const avail = data.available || [], missing = data.missing || [];
+        if (!avail.length && !missing.length) { status.textContent = 'No mods requested.'; return; }
+        status.textContent = avail.length
+          ? 'The server is missing ' + avail.length + ' mod' + (avail.length > 1 ? 's' : '') + ' on your client:'
+          : 'None of the requested mods are hosted here.';
+        const detail = await (await fetch('api/mods')).json();
+        const byId = Object.fromEntries((detail.mods || []).map(m => [m.id, m]));
+        avail.forEach(id => list.appendChild(card(byId[id] || {id, name: id}, true)));
+        missing.forEach(id => list.appendChild(card(id, false)));
+        if (avail.length > 1) {
+          dlAll.classList.remove('hidden');
+          dlAll.onclick = () => location.href = 'api/mods/bundle?ids=' + encodeURIComponent(avail.join(','));
+        }
+      } else {
+        res = await fetch('api/mods');
+        if (!res.ok) throw new Error('list failed');
+        const data = await res.json();
+        const mods = data.mods || [];
+        status.textContent = mods.length ? 'All mods hosted for this server:' : 'No mods indexed yet.';
+        mods.forEach(m => list.appendChild(card(m, true)));
+      }
+    } catch (e) {
+      status.textContent = 'Could not reach the mod list. Is the dashboard running?';
+    }
+  }
+  main();
+})();
+</script>
+</body>
+</html>

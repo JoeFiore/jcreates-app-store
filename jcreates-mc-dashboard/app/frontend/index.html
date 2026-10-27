@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MC Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href='data:application/manifest+json,{"name":"MC Dashboard","display":"standalone","start_url":"."}'>
+<meta name="theme-color" content="#14161a">
+</head>
+<body>
+
+<!-- login -->
+<div id="login" class="screen">
+  <div class="card">
+    <h1>⛏️ MC Dashboard</h1>
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn" class="primary">Log in</button>
+    <p id="loginErr" class="err"></p>
+  </div>
+</div>
+
+<!-- app -->
+<div id="app" class="screen hidden">
+  <header>
+    <div class="statusbar">
+      <span id="statusPill" class="pill stopped">stopped</span>
+      <span id="uptime" class="muted"></span>
+    </div>
+    <div class="controls">
+      <button id="btnStart" class="go">Start</button>
+      <button id="btnRestart" class="warn">Restart</button>
+      <button id="btnStop" class="danger">Stop</button>
+    </div>
+  </header>
+
+  <div id="externalNotice" class="hidden notice">
+    <span id="noticeText"></span>
+    <button id="btnTakeover" class="warn">Take over</button>
+  </div>
+
+  <nav id="tabs">
+    <button data-tab="console" class="active">Console</button>
+    <button data-tab="files">Files</button>
+    <button data-tab="import">Import</button>
+    <button data-tab="players">Players</button>
+    <button data-tab="backups">Backups</button>
+    <button data-tab="logs">Logs</button>
+    <button data-tab="mods" id="modsTabBtn">Mods</button>
+  </nav>
+
+  <main>
+    <section id="tab-console" class="tab active">
+      <div id="log"></div>
+      <div class="inputrow">
+        <input id="cmd" placeholder="Type a server command…" autocomplete="off">
+        <button id="sendCmd" class="primary">Send</button>
+      </div>
+    </section>
+
+    <section id="tab-files" class="tab">
+      <div class="toolbar">
+        <button id="upDir">↑ Up</button>
+        <span id="crumb" class="muted"></span>
+        <span class="spacer"></span>
+        <button id="newFolder">+ Folder</button>
+        <label class="filebtn">Upload<input id="upload" type="file" hidden></label>
+      </div>
+      <ul id="filelist"></ul>
+    </section>
+
+    <section id="tab-import" class="tab">
+      <p>Upload a zip of a whole server — server.jar (or fabric-server-launch.jar), mods/, config/, world/, everything. It extracts into the server folder and then starts like normal.</p>
+      <div class="toolbar">
+        <label class="filebtn">Choose zip<input id="importFile" type="file" accept=".zip" hidden></label>
+        <span id="importName" class="muted small"></span>
+      </div>
+      <div class="toolbar">
+        <label><input id="importClean" type="checkbox" checked> Replace existing server files (keeps backups/)</label>
+      </div>
+      <div class="toolbar">
+        <button id="doImport" class="primary">Import zip</button>
+        <button id="acceptEula" class="hidden">Accept Minecraft EULA</button>
+        <button id="importStart" class="go hidden">Start server</button>
+      </div>
+      <p id="importStatus" class="muted small"></p>
+      <div id="jarPicker" class="toolbar hidden">
+        <span class="muted small">Which jar runs the server?</span>
+        <select id="jarSelect"></select>
+        <button id="setJar" class="primary">Use this jar</button>
+      </div>
+      <p class="muted small">If the zip has one folder at the top holding the server, that folder is flattened automatically. If it needs the EULA, accept it here, then Start.</p>
+    </section>
+
+    <section id="tab-players" class="tab">
+      <div class="toolbar">
+        <button id="refreshPlayers">↻ Refresh</button>
+        <span class="spacer"></span>
+        <input id="wlName" placeholder="player name">
+        <button id="wlAdd">+ Whitelist</button>
+      </div>
+      <ul id="playerlist"></ul>
+      <p class="muted small">Tip: player actions run as server commands. Ban/pardon apply even when the player is offline — type the name in the whitelist box and use the buttons below.</p>
+      <div class="toolbar">
+        <button id="pardonBtn">Pardon</button>
+        <button id="opBtn">Op</button>
+        <button id="deopBtn">De-op</button>
+        <button id="wlRemoveBtn">Unwhitelist</button>
+      </div>
+    </section>
+
+    <section id="tab-backups" class="tab">
+      <div class="toolbar">
+        <button id="mkBackup" class="primary">+ Create backup now</button>
+        <span id="worldInfo" class="muted small"></span>
+      </div>
+      <ul id="backuplist"></ul>
+      <p class="muted small">Restoring stops the server first, then replaces the world folders.</p>
+    </section>
+
+    <section id="tab-logs" class="tab">
+      <div class="toolbar">
+        <select id="logFile"></select>
+        <input id="logLines" type="number" value="500" min="50" max="5000" step="50" style="max-width:90px">
+        <button id="refreshLogs">↻ Load</button>
+      </div>
+      <div id="logview"></div>
+    </section>
+
+    <section id="tab-mods" class="tab">
+      <div class="toolbar">
+        <button id="rescanMods" class="primary">↻ Rescan mods folder</button>
+        <span id="modsCount" class="muted small"></span>
+        <span class="spacer"></span>
+        <a id="publicModsLink" href="/mods" target="_blank" class="muted small">Public /mods page ↗</a>
+      </div>
+      <p class="muted small">Auto-detected from each jar. The public download page uses these; players missing a mod get a download button for it.</p>
+      <ul id="modslist"></ul>
+      <h3 style="margin-top:18px">Manual namespace → file mapping</h3>
+      <p class="muted small">Only needed when auto-detection gets it wrong (registry namespace ≠ mod id). Manual entries override auto-detection.</p>
+      <div class="toolbar">
+        <input id="mapNs" placeholder="namespace (e.g. mymodns)" style="max-width:200px">
+        <input id="mapFile" placeholder="filename in mods/ (e.g. SomeMod-1.2.3.jar)" style="max-width:280px">
+        <button id="addMapping" class="primary">Add mapping</button>
+      </div>
+      <ul id="mappingslist"></ul>
+    </section>
+  </main>
+</div>
+
+<!-- file editor modal -->
+<div id="editor" class="modal hidden">
+  <div class="modalcard">
+    <div class="toolbar"><strong id="edName"></strong><span class="spacer"></span>
+      <button id="edSave" class="primary">Save</button>
+      <button id="edClose">Close</button>
+    </div>
+    <textarea id="edText" spellcheck="false"></textarea>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

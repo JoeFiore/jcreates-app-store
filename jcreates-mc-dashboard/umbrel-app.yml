@@ -1,0 +1,26 @@
+manifestVersion: 1
+id: jcreates-mc-dashboard
+name: MC Dashboard
+version: "1.1.1"
+tagline: Manage your Minecraft Java server from any browser
+category: developer
+description: >-
+  A self-hosted web dashboard for a Minecraft Java server: live console with
+  commands, start/stop/restart, a file manager jailed to the server folder,
+  player moderation (kick, ban, whitelist, op), one-click world backups and
+  restore, log browsing, and RCON support. Import a whole server from a zip
+  on the Import tab — it extracts and starts like normal. The server itself
+  runs inside this app (Java 21), and all server files live on the app's
+  data volume, so worlds, mods and backups survive app updates. Players
+  join on port 25565. This build has no ModLink / /mods hosting.
+developer: JCreates
+website: https://github.com/JoeFiore
+repo: https://github.com/JoeFiore/jcreates-app-store
+support: https://github.com/JoeFiore/jcreates-app-store/issues
+icon: https://raw.githubusercontent.com/JoeFiore/jcreates-app-store/main/jcreates-mc-dashboard/icon.svg
+dependencies: []
+port: 8000
+gallery: []
+path: ""
+submitter: JCreates
+releaseNotes: "Fix: app id now starts with the store id (jcreates), which Umbrel requires to list an app — previously the app was silently filtered out. Store name also no longer duplicates 'app store' in the UI."
