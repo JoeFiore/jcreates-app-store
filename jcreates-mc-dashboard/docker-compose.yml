@@ -1,12 +1,21 @@
 services:
+  # Umbrel's gateway service: Umbrel reads APP_HOST/APP_PORT from here
+  # and routes the app's Open button to the dashboard. It is removed
+  # from the runtime compose by Umbrel itself (never a sidecar).
+  # PROXY_AUTH_ADD is false because the dashboard has its own login.
+  app_proxy:
+    environment:
+      APP_HOST: jcreates-mc-dashboard_mc-dashboard_1
+      APP_PORT: 8000
+      PROXY_AUTH_ADD: "false"
+
   mc-dashboard:
     build: .
     restart: unless-stopped
     ports:
-      # Umbrel assigns the dashboard's host port (${APP_PORT}); the
-      # container always listens on 8000. Open the app from Umbrel and
-      # it lands on the dashboard.
-      - "${APP_PORT}:8000"
+      # The dashboard itself is NOT published here on purpose: Umbrel
+      # reaches it through app_proxy above, so it can't collide with
+      # a host port. Open the app from Umbrel, not via a direct port.
       # Minecraft itself: join on <umbrel>:25565 (LAN, or Tailscale
       # address:25565 away from home). RCON (25575) is intentionally
       # not published — the dashboard runs the server itself.

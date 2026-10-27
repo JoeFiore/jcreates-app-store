@@ -2,7 +2,7 @@
 
 A personal Umbrel community app store. Right now it holds one app:
 
-## MC Dashboard (`jcreates-mc-dashboard`, v1.1.1)
+## MC Dashboard (`jcreates-mc-dashboard`, v1.1.2)
 
 A web dashboard for managing a Minecraft Java server — live console, start/stop/
 restart, file manager, player moderation, one-click backups, log viewer, RCON —
@@ -23,6 +23,8 @@ survive app updates.
    top-right, choose **Community App Stores**, paste the repo URL, and add it.
 3. Open the new **JCreates** store, install **MC Dashboard**. First install
    builds the Docker image on the box, which takes a few minutes — that's normal.
+   Open the dashboard from Umbrel (click the app) — Umbrel routes it through
+   its gateway, so there is no direct dashboard port to open.
 4. **First login:** the dashboard password is generated on first install and
    saved in the app's data dir. Read it from the Umbrel terminal:
    `cat ~/umbrel/app-data/jcreates-mc-dashboard/dashboard-password.txt`
@@ -52,7 +54,7 @@ jcreates-app-store/
     ├── umbrel-app.yml     # app manifest (id, version, port, ...)
     ├── docker-compose.yml # one container: dashboard + Java server runtime
     ├── Dockerfile         # Python 3.12 + Java 21 + dashboard source
-    ├── export.sh          # generates the dashboard login password once
+    ├── exports.sh         # generates the dashboard login password once (Umbrel sources this name, not export.sh)
     ├── icon.svg
     └── app/               # dashboard source (backend + frontend)
         ├── entrypoint.sh  # serves backend.docker_app (no /mods routes)
