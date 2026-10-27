@@ -2,7 +2,7 @@
 
 A personal Umbrel community app store. Right now it holds one app:
 
-## MC Dashboard (`jcreates-mc-dashboard`, v1.1.3)
+## MC Dashboard (`jcreates-mc-dashboard`, v1.1.4)
 
 A web dashboard for managing a Minecraft Java server — live console, start/stop/
 restart, file manager, player moderation, one-click backups, log viewer, RCON —
@@ -22,9 +22,10 @@ survive app updates.
 2. On your Umbrel: open the **App Store**, click the **three dots** in the
    top-right, choose **Community App Stores**, paste the repo URL, and add it.
 3. Open the new **JCreates** store, install **MC Dashboard**. First install
-   pulls the prebuilt image from GHCR (a few hundred MB), which takes a few
-   minutes — that's normal. Umbrel cannot build the image on the box: it
-   never copies the Dockerfile or app source into the app folder.
+   builds the image on the box from a git build context (Docker fetches the
+   Dockerfile and source from this public repo), which takes a few minutes
+   — that's normal. Umbrel cannot build from a local `build: .`: it never
+   copies the Dockerfile or app source into the app folder.
    Open the dashboard from Umbrel (click the app) — Umbrel routes it through
    its gateway, so there is no direct dashboard port to open.
 4. **First login:** the dashboard password is generated on first install and
@@ -36,10 +37,9 @@ survive app updates.
    then press Start. Players join on `umbrel.local:25565` at home, or
    `<Tailscale address>:25565` away from home.
 6. **Updating later:** bump `version` in `jcreates-mc-dashboard/umbrel-app.yml`,
-   set the matching tag in `docker-compose.yml` and in
-   `.github/workflows/build-image.yml`, push, wait for the workflow to publish
-   the image, and Umbrel will offer the update. Server files are on the app
-   data volume, so they survive updates.
+   push, and Umbrel will offer the update. The git build context always
+   builds from the latest `main`, so no image tag needs updating. Server
+   files are on the app data volume, so they survive updates.
 
 ### Tweaks
 

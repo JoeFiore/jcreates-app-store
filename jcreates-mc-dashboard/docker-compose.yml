@@ -10,15 +10,19 @@ services:
       PROXY_AUTH_ADD: "false"
 
   mc-dashboard:
-    # Prebuilt image on purpose: Umbrel only copies a whitelist of files
+    # Git build context on purpose: Umbrel only copies a whitelist of files
     # (docker-compose.yml, umbrel-app.yml, exports.sh, hooks) from the app
     # store repo into the app folder, so a Dockerfile and the dashboard
-    # source never reach the box. `build: .` therefore always failed with
-    # "failed to read dockerfile: no such file or directory". The image is
-    # built and published by .github/workflows/build-image.yml on every
-    # push to main that touches this app, so a version bump here must
-    # match a tag that workflow has published.
-    image: ghcr.io/joefiore/jcreates-mc-dashboard:1.1.3
+    # source never reach the box. Plain `build: .` therefore always failed
+    # with "failed to read dockerfile: no such file or directory". Pointing
+    # the build at the public repo instead lets Docker's BuildKit fetch the
+    # Dockerfile and source itself at install time — the compose file IS
+    # copied by Umbrel, and it carries this URL with it. This also avoids
+    # needing a published image at all (the GHCR workflow route was blocked:
+    # the GitHub App cannot push .github/workflows files, 403).
+    build:
+      context: https://github.com/JoeFiore/jcreates-app-store.git#main:jcreates-mc-dashboard
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       # The dashboard itself is NOT published here on purpose: Umbrel
