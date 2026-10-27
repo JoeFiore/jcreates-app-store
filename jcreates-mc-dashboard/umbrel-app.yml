@@ -1,7 +1,7 @@
 manifestVersion: 1
 id: jcreates-mc-dashboard
 name: MC Dashboard
-version: "1.1.2"
+version: "1.1.3"
 tagline: Manage your Minecraft Java server from any browser
 category: developer
 description: >-
@@ -23,4 +23,4 @@ port: 8000
 gallery: []
 path: ""
 submitter: JoeFiore
-releaseNotes: "Fix failed install: add Umbrel app_proxy service (gateway routing, dashboard port no longer published on the host), and rename export.sh to exports.sh so Umbrel actually sources the generated dashboard password."
+releaseNotes: "Fix failed install properly: Umbrel never copies a Dockerfile or app source into the app folder (only compose, manifest, exports, hooks), so build: . could never work. The dashboard now runs from a prebuilt image (ghcr.io/joefiore/jcreates-mc-dashboard:1.1.3) published by GitHub Actions, and Umbrel just pulls it instead of building."

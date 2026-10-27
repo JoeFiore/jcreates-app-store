@@ -10,7 +10,15 @@ services:
       PROXY_AUTH_ADD: "false"
 
   mc-dashboard:
-    build: .
+    # Prebuilt image on purpose: Umbrel only copies a whitelist of files
+    # (docker-compose.yml, umbrel-app.yml, exports.sh, hooks) from the app
+    # store repo into the app folder, so a Dockerfile and the dashboard
+    # source never reach the box. `build: .` therefore always failed with
+    # "failed to read dockerfile: no such file or directory". The image is
+    # built and published by .github/workflows/build-image.yml on every
+    # push to main that touches this app, so a version bump here must
+    # match a tag that workflow has published.
+    image: ghcr.io/joefiore/jcreates-mc-dashboard:1.1.3
     restart: unless-stopped
     ports:
       # The dashboard itself is NOT published here on purpose: Umbrel
