@@ -13,7 +13,7 @@ description: >-
   runs inside this app (Java 21), and all server files live on the app's
   data volume, so worlds, mods and backups survive app updates. Players
   join on port 25565. This build has no ModLink / /mods hosting.
-developer: JCreates
+developer: JoeFiore
 website: https://github.com/JoeFiore
 repo: https://github.com/JoeFiore/jcreates-app-store
 support: https://github.com/JoeFiore/jcreates-app-store/issues
@@ -22,5 +22,5 @@ dependencies: []
 port: 8000
 gallery: []
 path: ""
-submitter: JCreates
+submitter: JoeFiore
 releaseNotes: "Fix: app id now starts with the store id (jcreates), which Umbrel requires to list an app — previously the app was silently filtered out. Store name also no longer duplicates 'app store' in the UI."
