@@ -37,7 +37,7 @@ services:
     environment:
       SERVER_DIR: /data/server
       JAR_FILE: server.jar
-      JAVA_ARGS: -Xmx4G -Xms1G
+      JAVA_ARGS: -Xmx6G -Xms1G
       DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:-changeme}
       MODS_ENABLED: "false"
       PORT: 8000

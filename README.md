@@ -2,12 +2,12 @@
 
 A personal Umbrel community app store. Right now it holds one app:
 
-## MC Dashboard (`jcreates-mc-dashboard`, v1.1.4)
+## MC Dashboard (`jcreates-mc-dashboard`, v1.1.5)
 
 A web dashboard for managing a Minecraft Java server — live console, start/stop/
 restart, file manager, player moderation, one-click backups, log viewer, RCON —
 plus an **Import tab**: upload a zip of a whole server and it extracts and
-starts like normal. The server itself runs inside the app container (Java 21),
+starts like normal. The server itself runs inside the app container (Java 25),
 and all server files live on the app's data volume, so worlds, mods and backups
 survive app updates.
 
@@ -57,7 +57,7 @@ jcreates-app-store/
 └── jcreates-mc-dashboard/
     ├── umbrel-app.yml     # app manifest (id, version, port, ...)
     ├── docker-compose.yml # one container: dashboard + Java server runtime
-    ├── Dockerfile         # Python 3.12 + Java 21 + dashboard source
+    ├── Dockerfile         # Python 3.12 + Java 25 + dashboard source
     ├── exports.sh         # generates the dashboard login password once (Umbrel sources this name, not export.sh)
     ├── icon.svg
     └── app/               # dashboard source (backend + frontend)

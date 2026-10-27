@@ -1,8 +1,12 @@
-FROM python:3.12-slim
+FROM python:3.12-slim-trixie
 
-# Java 21 covers modern Minecraft servers (Paper, Fabric, Velocity).
+# Java 25: this server's Minecraft bundler is compiled to class file
+# version 69.0 (Java 25), and Java 21 only reads up to 65.0, so a
+# Java 21 runtime dies with UnsupportedClassVersionError on launch.
+# Debian 13 (trixie) is pinned here on purpose: openjdk-25-jre-headless
+# is in trixie's main archive, and it is not in bookworm's.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends openjdk-21-jre-headless \
+    && apt-get install -y --no-install-recommends openjdk-25-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
