@@ -1,7 +1,7 @@
 manifestVersion: 1
 id: jcreates-mc-dashboard
 name: MC Dashboard
-version: "1.1.5"
+version: "1.1.6"
 tagline: Manage your Minecraft Java server from any browser
 category: developer
 description: >-
@@ -23,4 +23,4 @@ port: 8000
 gallery: []
 path: ""
 submitter: JoeFiore
-releaseNotes: "Java 25 (was 21): the server jar's Minecraft bundler needs class file version 69.0, which Java 21 cannot read, so the server crashed on launch with UnsupportedClassVersionError. Also raises the server heap to 6G as requested."
+releaseNotes: "Publish the Bedrock port (19132 TCP + UDP) so Geyser's NetherNet transport can accept Bedrock players. TCP carries signaling, UDP carries gameplay; without both, Bedrock clients cannot connect."
