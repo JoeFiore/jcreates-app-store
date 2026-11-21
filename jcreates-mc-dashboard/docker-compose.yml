@@ -32,6 +32,11 @@ services:
       # address:25565 away from home). RCON (25575) is intentionally
       # not published — the dashboard runs the server itself.
       - "25565:25565"
+      # Bedrock (Geyser NetherNet): signaling runs over TCP and gameplay
+      # over UDP, both on 19132, so the port must be published twice.
+      # Without these, Bedrock players cannot reach the server at all.
+      - "19132:19132/tcp"
+      - "19132:19132/udp"
     volumes:
       - "${APP_DATA_DIR}:/data"
     environment:
